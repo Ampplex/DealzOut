@@ -12,7 +12,7 @@ import LottieView from "lottie-react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import queryString from "query-string";
 import { showMessage } from "react-native-flash-message";
-import { RegisterData } from "../abstraction/authentication";
+import { RegisterDataUser } from "../../abstraction/authentication";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState<string>("");
@@ -29,7 +29,7 @@ const Register = ({ navigation }) => {
     const apiUrl: string = "https://dealzout.onrender.com/api/users/";
 
     // Create form data
-    const data: RegisterData = {
+    const data: RegisterDataUser = {
       email: email,
       password: password,
       first_name: first_name,
@@ -97,7 +97,7 @@ const Register = ({ navigation }) => {
           <LottieView
             autoPlay={true}
             style={styles.animationStyle}
-            source={require("../assets/animations/login.json")} // Replace with the path to your animation JSON file
+            source={require("../../assets/animations/login.json")} // Replace with the path to your animation JSON file
           />
         </View>
         <View style={styles.welcomeMsg}>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   animationStyle: {
-    width: 330,
+    width: Dimensions.get("screen").width,
     height: 330,
     alignSelf: "center",
   },

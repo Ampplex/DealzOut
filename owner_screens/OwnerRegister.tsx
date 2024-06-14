@@ -6,49 +6,58 @@ import {
   Dimensions,
   TextInput,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import LottieView from "lottie-react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import queryString from "query-string";
 import { showMessage } from "react-native-flash-message";
-import { LoginData } from "../abstraction/authentication";
-import { setItemAsync, deleteItemAsync } from "expo-secure-store";
+import { RegisterDataOwner } from "../abstraction/authentication";
+import RegistrationInfo_Context from "../context/OwnerRegistration/RegistrationInfo_Context";
+import UserLocation_context from "../context/Cache/UserLocation_context";
 
-const Login = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+const OwnerRegister = ({ navigation }) => {
+  const { userLocation, address } = useContext(UserLocation_context);
 
-  async function storeAuthToken(prefix_token: any, token: string) {
-    try {
-      await setItemAsync(prefix_token, token);
-      console.log("Token stored successfully");
-    } catch (error) {
-      console.error("Error storing token:", error);
-    }
-  }
-
-  async function deleteAuthToken() {
-    try {
-      await deleteItemAsync("token");
-    } catch (error) {
-      console.error("Error retrieving token:", error);
-      navigation.replace("Login");
-    }
-  }
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [phoneNo, setPhoneNo] = useState<string>("");
+  const [PanCardNo, setPanCardNo] = useState<string>("");
+  const { setDetails } = useContext(RegistrationInfo_Context);
+  const addressArray = address.split(",");
+  const region = addressArray[0];
+  const city = addressArray[1];
+  const state = addressArray[2];
+  const zip = addressArray[3];
+  const country = addressArray[4];
+  const coordinates = [
+    userLocation.coords.latitude,
+    userLocation.coords.longitude,
+  ];
 
   useEffect(() => {
-    deleteAuthToken();
+    console.log(country);
+    console.log(userLocation.coords.longitude);
   }, []);
 
-  const loginBtnHandler = async (email: string, password: string) => {
-    const apiUrl = "https://dealzout.onrender.com/api/users/login";
+  const registerBtnHandler = async () => {
+    const apiUrl = "https://dealzout.onrender.com/api/owners";
 
     // Create form data
-    const data: LoginData = {
-      email: email,
-      password: password,
+    const data: RegisterDataOwner = {
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
+      email: email.trim(),
+      password: password.trim(),
+      phoneNumber: phoneNo.trim(),
+      panNumber: PanCardNo.trim(),
+      country: country.trim(),
+      state: state.trim(),
+      city: city.trim(),
+      region: region.trim(),
+      coordinates: coordinates.toString(),
     };
 
     // Serialize data to x-www-form-urlencoded format
@@ -75,14 +84,13 @@ const Login = ({ navigation }) => {
         console.log("POST request successful:", data);
         if (data.msg == "success") {
           showMessage({
-            message: "Logined successfully!",
+            message: "Registered successfully!",
             type: "success",
             duration: 1500,
             floating: true, // This allows the message to be displayed even if the user scrolls
             icon: "success",
           });
-          storeAuthToken("token", data.token);
-          navigation.replace("Route");
+          navigation.replace("OwnerLogin");
         } else {
           showMessage({
             message: "Invalid credentials",
@@ -118,10 +126,28 @@ const Login = ({ navigation }) => {
               color: "#6A4E90",
             }}
           >
-            Welcome back!
+            Register
           </Text>
         </View>
         {/* User details */}
+
+        {/* First Name */}
+        <View style={styles.firstName}>
+          <TextInput
+            style={styles.InputStyle}
+            placeholder="First Name"
+            onChangeText={(text: string) => setFirstName(text.trim())}
+          />
+        </View>
+
+        {/* Last Name */}
+        <View style={styles.lastName}>
+          <TextInput
+            style={styles.InputStyle}
+            placeholder="Last Name"
+            onChangeText={(text: string) => setLastName(text.trim())}
+          />
+        </View>
 
         {/* Email */}
         <View style={styles.Email}>
@@ -140,27 +166,29 @@ const Login = ({ navigation }) => {
             secureTextEntry={true}
             onChangeText={(text: string) => setPassword(text.trim())}
           />
-          {/* <TouchableOpacity
-            onPress={() => {
-              setShowPassword(!showPassword);
-              console.log(!showPassword);
-            }} // Toggle password visibility
-            style={styles.viewPasswordBtn}
-          >
-            {!showPassword ? (
-              <Ionicons name="eye-outline" size={25} color="#908D88" />
-            ) : (
-              <Feather name="eye-off" size={24} color="#908D88" />
-            )}
-          </TouchableOpacity> */}
         </View>
 
-        {/* Login Button */}
+        {/* Phone No. */}
+        <View style={styles.PhoneNo}>
+          <TextInput
+            style={styles.InputStyle}
+            placeholder="Enter your Phone Number"
+            onChangeText={(text: string) => setPhoneNo(text.trim())}
+          />
+        </View>
+
+        <View style={styles.PanCard}>
+          <TextInput
+            style={styles.InputStyle}
+            placeholder="Enter your PAN Number"
+            onChangeText={(text: string) => setPanCardNo(text.trim())}
+          />
+        </View>
+
+        {/* Proceed Button */}
         <TouchableOpacity
-          style={styles.Login_btn}
-          onPress={() => {
-            loginBtnHandler(email, password);
-          }}
+          style={styles.Proceed_btn}
+          onPress={() => registerBtnHandler()}
         >
           <Text
             style={{
@@ -170,7 +198,7 @@ const Login = ({ navigation }) => {
               fontSize: 20,
             }}
           >
-            Login
+            Proceed
           </Text>
         </TouchableOpacity>
         <View
@@ -178,31 +206,19 @@ const Login = ({ navigation }) => {
             top: 20,
           }}
         />
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text
-            style={{
-              marginTop: 25,
-              color: "#6A4E90",
-              fontSize: 16,
-              fontFamily: "sans-serif-medium",
-            }}
-          >
-            Don't have an account? Register
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </>
   );
 };
 
-export default Login;
+export default OwnerRegister;
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    height: Dimensions.get("screen").height,
+    height: Dimensions.get("screen").height * 1.1,
   },
   LoginAnimation_Container: {
     width: 290,
@@ -225,29 +241,48 @@ const styles = StyleSheet.create({
     width: 280,
     height: 47,
     backgroundColor: "#fff",
-    marginTop: 200,
     left: -17,
     borderRadius: 20,
     borderColor: "#6A4E90",
     borderWidth: 2.2,
+    marginTop: 20,
   },
   Password: {
     width: 280,
     height: 47,
     backgroundColor: "#fff",
-    marginTop: 20,
     left: -17,
     borderRadius: 20,
     borderColor: "#6A4E90",
     borderWidth: 2.2,
+    marginTop: 20,
+  },
+  firstName: {
+    width: 280,
+    height: 47,
+    backgroundColor: "#fff",
+    left: -17,
+    borderRadius: 20,
+    borderColor: "#6A4E90",
+    borderWidth: 2.2,
+    marginTop: 350,
+  },
+  lastName: {
+    width: 280,
+    height: 47,
+    backgroundColor: "#fff",
+    left: -17,
+    borderRadius: 20,
+    borderColor: "#6A4E90",
+    borderWidth: 2.2,
+    marginTop: 20,
   },
   InputStyle: {
     width: 280,
     height: 47,
     padding: 10,
-    borderRadius: 20,
   },
-  Login_btn: {
+  Proceed_btn: {
     width: 160,
     height: 50,
     backgroundColor: "#6A4E90",
@@ -256,12 +291,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  viewPasswordBtn: {
-    // backgroundColor: "green",
-    width: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "flex-end",
-    bottom: 27,
+  PhoneNo: {
+    width: 280,
+    height: 47,
+    backgroundColor: "#fff",
+    left: -17,
+    borderRadius: 20,
+    borderColor: "#6A4E90",
+    borderWidth: 2.2,
+    marginTop: 20,
+  },
+  PanCard: {
+    width: 280,
+    height: 47,
+    backgroundColor: "#fff",
+    left: -17,
+    borderRadius: 20,
+    borderColor: "#6A4E90",
+    borderWidth: 2.2,
+    marginTop: 20,
   },
 });

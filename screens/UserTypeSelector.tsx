@@ -9,23 +9,8 @@ import {
 import React, { useEffect } from "react";
 import LottieView from "lottie-react-native";
 import { StatusBar } from "expo-status-bar";
-import { deleteItemAsync } from "expo-secure-store";
 
-const Onboarding = ({ navigation }) => {
-  async function deleteAuthToken() {
-    try {
-      await deleteItemAsync("User_token");
-      await deleteItemAsync("Owner_token");
-    } catch (error) {
-      console.error("Error retrieving token:", error);
-      navigation.replace("Login");
-    }
-  }
-
-  useEffect(() => {
-    deleteAuthToken();
-  }, []);
-
+const UserTypeSelector = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
@@ -56,7 +41,7 @@ const Onboarding = ({ navigation }) => {
       {/* Login Button */}
       <TouchableOpacity
         style={styles.Login_btn}
-        onPress={() => navigation.replace("Login")}
+        onPress={() => navigation.replace("Route")}
       >
         <Text
           style={{
@@ -72,7 +57,7 @@ const Onboarding = ({ navigation }) => {
       {/* Sign Up */}
       <TouchableOpacity
         style={styles.Sign_Up}
-        onPress={() => navigation.navigate("OwnerLogin")}
+        onPress={() => navigation.navigate("OwnerRoute")}
       >
         <Text
           style={{
@@ -90,7 +75,7 @@ const Onboarding = ({ navigation }) => {
   );
 };
 
-export default Onboarding;
+export default UserTypeSelector;
 
 const styles = StyleSheet.create({
   container: {

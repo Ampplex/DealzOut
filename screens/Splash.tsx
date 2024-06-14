@@ -1,45 +1,59 @@
 import { StyleSheet, Text, View, Image, Animated } from "react-native";
 import { getItemAsync } from "expo-secure-store";
 import LoginInfo_Context from "../context/LoginInfo/LoginInfo_Context";
+import RegistrationInfo_Context from "../context/OwnerRegistration/RegistrationInfo_Context";
 import React, { useEffect, useContext, useState } from "react";
 import { decode as atob } from "base-64";
 
 const Splash = ({ navigation }) => {
   const opacity = new Animated.Value(0);
   const { token, setMyToken } = useContext(LoginInfo_Context);
-  const [token2, setToken2] = useState<string>("");
+  const { first_name, last_name, email, phoneNo, PanCardNo, setDetails } =
+    useContext(RegistrationInfo_Context);
+  const [userToken, setUserToken] = useState<string>("");
+  const [ownerToken, setOwnerToken] = useState<any>("");
 
-  function Token_Decoder() {
+  function Token_Decoder(Token, type: string) {
     try {
-      console.log(token2);
-      if (!token2) {
+      console.log(Token);
+      if (!Token) {
         console.error("Token is empty");
         return;
       }
 
-      const [header, payload, signature] = token2.split(".");
+      const [header, payload, signature] = Token.split(".");
       // Decode the payload
       const decodedToken = JSON.parse(atob(payload));
-      // console.log("dfdgdfg ", decodedToken);
-      setMyToken(decodedToken);
+
+      if (type === "user") {
+        setUserToken(decodedToken);
+      } else if (type === "owner") {
+        setOwnerToken(decodedToken);
+      } else {
+        throw "Invalid user type";
+      }
     } catch (error) {
-      console.error("Error decoding token:", error);
+      console.error("Error decoding User_token:", error);
     }
   }
 
-  // Retrieve the authentication token
+  // Retrieve the authentication User_token
   async function getAuthToken() {
     try {
-      const token = await getItemAsync("token");
-      if (token !== null) {
-        console.log("Token retrieved successfully:", token);
-        setToken2(token);
+      const User_token = await getItemAsync("User_token");
+      const Owner_token = await getItemAsync("Owner_token");
+      if (User_token !== null) {
+        console.log("Token retrieved successfully:", User_token);
+        setUserToken(User_token);
+      } else if (Owner_token !== null) {
+        console.log("Token retrieved successfully:", Owner_token);
+        setOwnerToken(Owner_token);
       } else {
         console.log("Token not found");
         navigation.replace("Onboarding");
       }
     } catch (error) {
-      console.error("Error retrieving token:", error);
+      console.error("Error retrieving User_token:", error);
       navigation.replace("Onboarding");
     }
   }
@@ -61,13 +75,25 @@ const Splash = ({ navigation }) => {
 
   useEffect(() => {
     // Run Token_Decoder when token2 changes
-    if (token2) {
-      Token_Decoder();
-      console.log(token);
+
+    if (userToken) {
+      Token_Decoder(userToken, "user");
+      console.log(userToken);
       // Navigate to the desired route
       navigation.replace("Route");
+    } else if (ownerToken) {
+      Token_Decoder(ownerToken, "owner");
+      setDetails(
+        ownerToken.firstName,
+        ownerToken.lastName,
+        ownerToken.email,
+        ownerToken.phoneNumber,
+        ownerToken.panNumber
+      );
+      // Navigate to the desired route
+      navigation.replace("OwnerRoute");
     }
-  }, [token2]);
+  }, [userToken, ownerToken]);
 
   return (
     <Animated.View

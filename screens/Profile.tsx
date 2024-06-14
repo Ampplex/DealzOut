@@ -59,7 +59,7 @@ const Profile = ({ name, navigation }) => {
           </View>
 
           {/* UserName */}
-          <Text style={styles.Name}>{name}</Text>
+          <Text style={styles.Name}>Ankesh Kumar</Text>
 
           <View style={styles.YourActivity}>
             <Text
@@ -84,7 +84,7 @@ const Profile = ({ name, navigation }) => {
 
           <TouchableOpacity
             style={styles.logOut}
-            onPress={() => navigation.navigate("Onboarding")}
+            onPress={() => navigation.replace("Onboarding")}
           >
             <Text
               style={{

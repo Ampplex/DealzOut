@@ -4,7 +4,7 @@ interface fetchLocation {
 
 export const getLocation: fetchLocation = async (latitude: number, longitude: number): Promise<string[]> => {
     const url = `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=65a446e59c055987786503bfk76e0c2`;
-    console.log(latitude, longitude);
+
     const resp = []
     const response = await fetch(url);
 

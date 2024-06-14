@@ -135,7 +135,7 @@ const HomeScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.Offers}
-          onPress={() => navigation.navigate("Order")}
+          onPress={() => navigation.navigate("Offers")}
         >
           <LottieView
             source={require("../assets/animations/offer.json")}
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 40,
     paddingRight: 120,
-    fontSize: 12.5,
+    fontSize: 14,
     top: 52,
     fontFamily: "sans-serif-medium",
     color: "#000",
