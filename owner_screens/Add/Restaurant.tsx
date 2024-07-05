@@ -1,3 +1,4 @@
+import React, { useEffect, useContext, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,35 +9,38 @@ import {
   TouchableOpacity,
   Image,
   Platform,
+  ScrollView,
 } from "react-native";
-import React, { useEffect, useContext, useState } from "react";
-import { ScrollView } from "react-native-gesture-handler";
-import RegistrationInfo_Context from "../../context/OwnerRegistration/RegistrationInfo_Context";
-import { Entypo } from "@expo/vector-icons";
-import { FontAwesome6 } from "@expo/vector-icons";
-import UserLocation_context from "../../context/Cache/UserLocation_context";
 import { Picker } from "@react-native-picker/picker";
+import { Entypo, FontAwesome6, Feather } from "@expo/vector-icons";
+import MultiSelect from "react-native-multiple-select";
+import { RadioButton } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
+import { showMessage } from "react-native-flash-message";
+import queryString from "query-string";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import RegistrationInfo_Context from "../../context/OwnerRegistration/RegistrationInfo_Context";
+import UserLocation_context from "../../context/Cache/UserLocation_context";
+import { storage } from "../../config/firebase";
 import cities from "../../assets/places/cities_data";
 import states from "../../assets/places/states_data";
 import time from "../../assets/time_list/time_list";
 import days from "../../assets/Days_List/Days_List";
-import MultiSelect from "react-native-multiple-select";
-import { RadioButton } from "react-native-paper";
-import { Feather } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import { showMessage } from "react-native-flash-message";
-import queryString from "query-string";
-import { storage } from "../../config/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  Images,
+  RegistrationInfo,
+  UserLocation,
+} from "../../abstraction/RestaurandInfo";
 
-const Restaurant = ({ navigation }) => {
-  const cardContainerRadius = new Animated.Value(0);
-  const cardContainerElevation = new Animated.Value(0);
+const Restaurant = ({ navigation }: any) => {
+  const cardContainerRadius: Animated.Value = new Animated.Value(0);
+  const cardContainerElevation: Animated.Value = new Animated.Value(0);
 
-  const { id, first_name, last_name, email, phoneNo, PanCardNo, setDetails } =
-    useContext(RegistrationInfo_Context);
+  const { id, first_name, last_name, email, phoneNo, PanCardNo } =
+    useContext<RegistrationInfo>(RegistrationInfo_Context);
 
-  const { userLocation, address } = useContext(UserLocation_context);
+  const { userLocation, address } =
+    useContext<UserLocation>(UserLocation_context);
 
   const [phoneNum, setPhoneNum] = useState<string>(phoneNo);
   const [selectedCity, setSelectedCity] = useState<string>("");
@@ -44,33 +48,18 @@ const Restaurant = ({ navigation }) => {
   const [selectedOpeningTime, setSelectedOpeningTime] = useState<string>("");
   const [selectedClosingTime, setSelectedClosingTime] = useState<string>("");
   const [selectedDays, setSelectedDays] = useState([]);
-  const [seatingCapacity, setSeatingCapacity] = useState<string>(null);
+  const [seatingCapacity, setSeatingCapacity] = useState(null);
   const [dietary, setDietary] = useState<string>("first");
-  const [image1, setImage1] = useState<string>(null);
-  const [image2, setImage2] = useState<string>(null);
-  const [image3, setImage3] = useState<string>(null);
+
+  const [images, setImages] = useState<Images>({
+    image1: null,
+    image2: null,
+    image3: null,
+  });
+
   const [websiteLink, setWebsiteLink] = useState<string>("");
   const [restaurantName, setRestaurantName] = useState<string>("");
   const [restaurantAddress, setRestaurantAddress] = useState<string>("");
-
-  const pickImage = async (imageNumber: number) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      if (imageNumber == 1) {
-        setImage1(result.assets[0].uri);
-      } else if (imageNumber == 2) {
-        setImage2(result.assets[0].uri);
-      } else {
-        setImage3(result.assets[0].uri);
-      }
-    }
-  };
 
   useEffect(() => {
     Animated.timing(cardContainerRadius, {
@@ -85,16 +74,31 @@ const Restaurant = ({ navigation }) => {
     }).start();
   }, []);
 
-  const uploadImage = async (uri: string) => {
+  const pickImage = async (imageNumber: number) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImages((prevImages) => ({
+        ...prevImages,
+        [`image${imageNumber}`]: result.assets[0].uri,
+      }));
+    }
+  };
+
+  const uploadImage = async (uri: string): Promise<string | null> => {
     if (!uri) {
       console.error("No file provided");
-      return;
+      return null;
     }
 
     const filename = uri.substring(uri.lastIndexOf("/") + 1);
     const response = await fetch(uri);
     const blob = await response.blob();
-
     const storageRef = ref(storage, `images/${id}/${filename}`);
 
     try {
@@ -110,22 +114,11 @@ const Restaurant = ({ navigation }) => {
   const addRestaurant = async () => {
     const apiUrl = "https://dealzout.onrender.com/api/owners/AddRestaurant";
 
-    const uploadUri1 =
-      Platform.OS === "ios" ? image1.replace("file://", "") : image1;
-    const uploadUri2 =
-      Platform.OS === "ios" ? image2.replace("file://", "") : image2;
-    const uploadUri3 =
-      Platform.OS === "ios" ? image3.replace("file://", "") : image3;
+    const uploadedImgLinks = await Promise.all(
+      Object.values(images).map((image) => uploadImage(image))
+    );
 
-    const uploadedImgLink1 = await uploadImage(uploadUri1);
-    const uploadedImgLink2 = await uploadImage(uploadUri2);
-    const uploadedImgLink3 = await uploadImage(uploadUri3);
-
-    console.log("Image uploaded1 : ", uploadedImgLink1);
-    console.log("Image uploaded2 : ", uploadedImgLink2);
-    console.log("Image uploaded3 : ", uploadedImgLink3);
-
-    if (!uploadedImgLink1 || !uploadedImgLink2 || !uploadedImgLink3) {
+    if (uploadedImgLinks.includes(null)) {
       showMessage({
         message: "Failed to upload the images",
         type: "danger",
@@ -138,55 +131,52 @@ const Restaurant = ({ navigation }) => {
 
     const data = {
       ownerId: id,
-      restaurantName: restaurantName,
-      seatingCapacity: seatingCapacity,
-      restaurantAddress: restaurantAddress,
+      restaurantName,
+      seatingCapacity,
+      restaurantAddress,
       city: selectedCity,
       state: selectedState,
       openingTime: selectedOpeningTime,
       closingTime: selectedClosingTime,
-      websiteLink: websiteLink,
+      websiteLink,
       dietaryOptions: dietary,
-      img1: uploadedImgLink1,
-      img2: uploadedImgLink2,
-      img3: uploadedImgLink3,
+      img1: uploadedImgLinks[0],
+      img2: uploadedImgLinks[1],
+      img3: uploadedImgLinks[2],
     };
 
     const formDataString = queryString.stringify(data);
 
-    fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formDataString,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          showMessage({
-            message: "Invalid information",
-            type: "danger",
-            duration: 1500,
-            floating: true,
-            icon: "danger",
-          });
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formDataString,
+      });
+
+      if (!response.ok) {
         showMessage({
-          message: "Added successfully!",
-          type: "success",
+          message: "Invalid information",
+          type: "danger",
           duration: 1500,
           floating: true,
-          icon: "success",
+          icon: "danger",
         });
-        return response.json();
-      })
-      .then((data) => {
-        console.log("POST request successful:", data);
-      })
-      .catch((error) => {
-        console.error("Error during POST request:", error);
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      showMessage({
+        message: "Added successfully!",
+        type: "success",
+        duration: 1500,
+        floating: true,
+        icon: "success",
       });
+
+      console.log("POST request successful:", await response.json());
+    } catch (error) {
+      console.error("Error during POST request:", error);
+    }
   };
 
   return (
@@ -227,10 +217,9 @@ const Restaurant = ({ navigation }) => {
               paddingLeft: 15,
               paddingRight: 15,
             }}
-            onChangeText={(name: string) => setRestaurantName(name)}
+            onChangeText={(name: string) => setRestaurantName(name.trim())}
             cursorColor={"#000"}
             maxLength={35}
-            value={restaurantName}
           />
           <FontAwesome6
             name="hotel"
@@ -297,8 +286,7 @@ const Restaurant = ({ navigation }) => {
               paddingLeft: 15,
               paddingRight: 15,
             }}
-            onChangeText={(address) => setRestaurantAddress(address)}
-            value={restaurantAddress}
+            onChangeText={(address) => setRestaurantAddress(address.trim())}
             cursorColor={"#000"}
           />
         </View>
@@ -475,7 +463,7 @@ const Restaurant = ({ navigation }) => {
             top: 20,
           }}
           cursorColor={"#000"}
-          onChangeText={(website: string) => setWebsiteLink(website)}
+          onChangeText={(website: string) => setWebsiteLink(website.trim())}
         />
 
         <TextInput
@@ -492,7 +480,9 @@ const Restaurant = ({ navigation }) => {
             backgroundColor: "#F5F5F5",
             top: 50,
           }}
-          onChangeText={(capacity: string) => setSeatingCapacity(capacity)}
+          onChangeText={(capacity: string) =>
+            setSeatingCapacity(capacity.trim())
+          }
           keyboardType="number-pad"
           cursorColor={"#000"}
         />
@@ -631,14 +621,20 @@ const Restaurant = ({ navigation }) => {
         >
           <Feather name="upload" size={22} color="#000" />
         </TouchableOpacity>
-        {image1 && (
+        {images.image1 && (
           <>
             {/* Displaying the selected image */}
-            <Image source={{ uri: image1 }} style={styles.image} />
+            <Image source={{ uri: images.image1 }} style={styles.image} />
             {/* If the user presses the cancel button then the image will be removed */}
             <TouchableOpacity
               style={styles.cancelImgBtn}
-              onPress={() => setImage1(null)}
+              onPress={() => {
+                setImages({
+                  image1: null,
+                  image2: images.image2,
+                  image3: images.image3,
+                });
+              }}
             >
               <Entypo name="cross" size={40} color="#fff" />
             </TouchableOpacity>
@@ -673,15 +669,21 @@ const Restaurant = ({ navigation }) => {
         >
           <Feather name="upload" size={22} color="#000" />
         </TouchableOpacity>
-        {image2 && (
+        {images.image2 && (
           <>
             {/* Displaying the selected image */}
-            <Image source={{ uri: image2 }} style={styles.image} />
+            <Image source={{ uri: images.image2 }} style={styles.image} />
 
             {/* If the user presses the cancel button then the image will be removed */}
             <TouchableOpacity
               style={styles.cancelImgBtn}
-              onPress={() => setImage2(null)}
+              onPress={() => {
+                setImages({
+                  image1: images.image1,
+                  image2: null,
+                  image3: images.image3,
+                });
+              }}
             >
               <Entypo name="cross" size={40} color="#fff" />
             </TouchableOpacity>
@@ -716,15 +718,21 @@ const Restaurant = ({ navigation }) => {
         >
           <Feather name="upload" size={22} color="#000" />
         </TouchableOpacity>
-        {image3 && (
+        {images.image3 && (
           <>
             {/* Displaying the selected image */}
-            <Image source={{ uri: image3 }} style={styles.image} />
+            <Image source={{ uri: images.image3 }} style={styles.image} />
 
             {/* If the user presses the cancel button then the image will be removed */}
             <TouchableOpacity
               style={styles.cancelImgBtn}
-              onPress={() => setImage3(null)}
+              onPress={() => {
+                setImages({
+                  image1: images.image1,
+                  image2: images.image2,
+                  image3: null,
+                });
+              }}
             >
               <Entypo name="cross" size={40} color="#fff" />
             </TouchableOpacity>

@@ -6,24 +6,14 @@ const RegistrationInfo_State = (props: any) => {
   const [first_name, setFirstName] = useState<string>("");
   const [last_name, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [phoneNo, setPhoneNo] = useState<string>("");
   const [PanCardNo, setPanCardNo] = useState<string>("");
 
-  const setDetails = (
-    id,
-    first_name,
-    last_name,
-    email,
-    password,
-    phoneNo,
-    PanCardNo
-  ) => {
+  const setDetails = (id, first_name, last_name, email, phoneNo, PanCardNo) => {
     setId(id);
     setFirstName(first_name);
     setLastName(last_name);
     setEmail(email);
-    setPassword(password);
     setPhoneNo(phoneNo);
     setPanCardNo(PanCardNo);
   };
