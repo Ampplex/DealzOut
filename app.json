@@ -13,6 +13,14 @@
       "eas": {
         "projectId": "d654c1c9-8b08-4dd2-bcaa-813596186e41"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses photos to provide the restaurant images to the respective users"
+        }
+      ]
+    ]
   }
 }

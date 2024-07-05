@@ -8,7 +8,7 @@ import { decode as atob } from "base-64";
 const Splash = ({ navigation }) => {
   const opacity = new Animated.Value(0);
   const { token, setMyToken } = useContext(LoginInfo_Context);
-  const { first_name, last_name, email, phoneNo, PanCardNo, setDetails } =
+  const { id, first_name, last_name, email, phoneNo, PanCardNo, setDetails } =
     useContext(RegistrationInfo_Context);
   const [userToken, setUserToken] = useState<string>("");
   const [ownerToken, setOwnerToken] = useState<any>("");
@@ -24,7 +24,7 @@ const Splash = ({ navigation }) => {
       const [header, payload, signature] = Token.split(".");
       // Decode the payload
       const decodedToken = JSON.parse(atob(payload));
-
+      console.log("HERE: ", decodedToken._id);
       if (type === "user") {
         setUserToken(decodedToken);
       } else if (type === "owner") {
@@ -84,6 +84,7 @@ const Splash = ({ navigation }) => {
     } else if (ownerToken) {
       Token_Decoder(ownerToken, "owner");
       setDetails(
+        ownerToken._id,
         ownerToken.firstName,
         ownerToken.lastName,
         ownerToken.email,

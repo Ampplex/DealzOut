@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "962461258247",
+    "project_id": "dealsout-35f76",
+    "storage_bucket": "dealsout-35f76.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:962461258247:android:98f11bcca4c329350590a2",
+        "android_client_info": {
+          "package_name": "com.moneyminder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn9qdQamMB_4wBWUhpO3SileLhO24qJLk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

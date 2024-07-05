@@ -38,7 +38,6 @@ const Register = ({ navigation }) => {
 
     // Serialize data to x-www-form-urlencoded format
     const formDataString = queryString.stringify(data);
-
     console.log(formDataString);
 
     // Making a POST request to register a new account

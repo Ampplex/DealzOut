@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import RegistrationInfo_Context from "./RegistrationInfo_Context";
 
 const RegistrationInfo_State = (props: any) => {
+  const [id, setId] = useState<string>("");
   const [first_name, setFirstName] = useState<string>("");
   const [last_name, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -10,6 +11,7 @@ const RegistrationInfo_State = (props: any) => {
   const [PanCardNo, setPanCardNo] = useState<string>("");
 
   const setDetails = (
+    id,
     first_name,
     last_name,
     email,
@@ -17,6 +19,7 @@ const RegistrationInfo_State = (props: any) => {
     phoneNo,
     PanCardNo
   ) => {
+    setId(id);
     setFirstName(first_name);
     setLastName(last_name);
     setEmail(email);
@@ -28,6 +31,7 @@ const RegistrationInfo_State = (props: any) => {
   return (
     <RegistrationInfo_Context.Provider
       value={{
+        id,
         first_name,
         last_name,
         email,
