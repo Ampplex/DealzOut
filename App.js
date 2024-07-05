@@ -28,7 +28,6 @@ import RegistrationInfo_State from "./context/OwnerRegistration/RegistrationInfo
 import Offers from "./screens/Offers";
 import OwnerHome from "./owner_screens/OwnerHome";
 import Restaurant from "./owner_screens/Add/Restaurant";
-import UploadImgUri_State from "./context/UploadImgUri/UploadImgUri_State";
 
 export default function App() {
   const config = {
@@ -55,155 +54,153 @@ export default function App() {
 
   return (
     <>
-      <UploadImgUri_State>
-        <RegistrationInfo_State>
-          <LoginInfo_State>
-            <Currency_State>
-              <UserLocation_State>
-                <StatusBar style="auto" />
-                <NavigationContainer>
-                  <Stack.Navigator
-                    screenOptions={{
-                      headerTitleAlign: "center",
-                      gestureEnabled: true,
-                      gestureDirection: "horizontal",
-                      cardStyleInterpolator:
-                        CardStyleInterpolators.forHorizontalIOS,
-                      transitionSpec: {
-                        open: config,
-                        close: closeConfig,
-                        headerMode: "float",
-                      },
+      <RegistrationInfo_State>
+        <LoginInfo_State>
+          <Currency_State>
+            <UserLocation_State>
+              <StatusBar style="auto" />
+              <NavigationContainer>
+                <Stack.Navigator
+                  screenOptions={{
+                    headerTitleAlign: "center",
+                    gestureEnabled: true,
+                    gestureDirection: "horizontal",
+                    cardStyleInterpolator:
+                      CardStyleInterpolators.forHorizontalIOS,
+                    transitionSpec: {
+                      open: config,
+                      close: closeConfig,
+                      headerMode: "float",
+                    },
+                  }}
+                  animation="fade"
+                >
+                  <Stack.Screen
+                    name="Splash"
+                    component={Splash}
+                    options={{
+                      headerShown: false,
                     }}
-                    animation="fade"
-                  >
-                    <Stack.Screen
-                      name="Splash"
-                      component={Splash}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Onboarding"
-                      component={Onboarding}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Login"
-                      component={Login}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Register"
-                      component={Register}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Route"
-                      component={Route}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Home"
-                      component={Home}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Settings"
-                      component={Settings}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Order"
-                      component={Order}
-                      options={{
-                        headerShown: true,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="ViewOrder"
-                      component={ViewOrder}
-                      options={{
-                        headerShown: true,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="Search"
-                      component={Search}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                  />
+                  <Stack.Screen
+                    name="Onboarding"
+                    component={Onboarding}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Login"
+                    component={Login}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Register"
+                    component={Register}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Route"
+                    component={Route}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Home"
+                    component={Home}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Settings"
+                    component={Settings}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Order"
+                    component={Order}
+                    options={{
+                      headerShown: true,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="ViewOrder"
+                    component={ViewOrder}
+                    options={{
+                      headerShown: true,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Search"
+                    component={Search}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
 
-                    <Stack.Screen
-                      name="OwnerLogin"
-                      component={OwnerLogin}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                  <Stack.Screen
+                    name="OwnerLogin"
+                    component={OwnerLogin}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
 
-                    <Stack.Screen
-                      name="OwnerRegister"
-                      component={OwnerRegister}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                  <Stack.Screen
+                    name="OwnerRegister"
+                    component={OwnerRegister}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
 
-                    <Stack.Screen
-                      name="Offers"
-                      component={Offers}
-                      options={{
-                        headerShown: true,
-                      }}
-                    />
+                  <Stack.Screen
+                    name="Offers"
+                    component={Offers}
+                    options={{
+                      headerShown: true,
+                    }}
+                  />
 
-                    <Stack.Screen
-                      name="OwnerHome"
-                      component={OwnerHome}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                  <Stack.Screen
+                    name="OwnerHome"
+                    component={OwnerHome}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
 
-                    <Stack.Screen
-                      name="OwnerRoute"
-                      component={OwnerRoute}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                  <Stack.Screen
+                    name="OwnerRoute"
+                    component={OwnerRoute}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
 
-                    <Stack.Screen
-                      name="Restaurant"
-                      component={Restaurant}
-                      options={{
-                        headerShown: true,
-                        headerTitle: "Add Restaurant",
-                      }}
-                    />
-                  </Stack.Navigator>
-                </NavigationContainer>
-                <FlashMessage position={"bottom"} />
-              </UserLocation_State>
-            </Currency_State>
-          </LoginInfo_State>
-        </RegistrationInfo_State>
-      </UploadImgUri_State>
+                  <Stack.Screen
+                    name="Restaurant"
+                    component={Restaurant}
+                    options={{
+                      headerShown: true,
+                      headerTitle: "Add Restaurant",
+                    }}
+                  />
+                </Stack.Navigator>
+              </NavigationContainer>
+              <FlashMessage position={"bottom"} />
+            </UserLocation_State>
+          </Currency_State>
+        </LoginInfo_State>
+      </RegistrationInfo_State>
     </>
   );
 }
